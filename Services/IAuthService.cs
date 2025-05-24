@@ -1,5 +1,5 @@
-using JWTAutentication.Entities;
-using JWTAutentication.Models;
+using JWTAuthentication.Entities;
+using JWTAuthentication.Models;
 
 namespace JWTAuthentication.Services
 {

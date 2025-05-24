@@ -1,5 +1,5 @@
 using System.Text;
-using JWTAutentication.Data;
+using JWTAuthentication.Data;
 using JWTAuthentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

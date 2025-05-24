@@ -1,9 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using JWTAutentication.Data;
-using JWTAutentication.Entities;
-using JWTAutentication.Models;
+using JWTAuthentication.Data;
+using JWTAuthentication.Entities;
+using JWTAuthentication.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

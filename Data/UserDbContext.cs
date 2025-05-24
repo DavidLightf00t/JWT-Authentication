@@ -1,7 +1,7 @@
-using JWTAutentication.Entities;
+using JWTAuthentication.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace JWTAutentication.Data
+namespace JWTAuthentication.Data
 {
     public class UserDbContext(DbContextOptions<UserDbContext> options) : DbContext(options)
     {

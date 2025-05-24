@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using JWTAutentication.Entities;
-using JWTAutentication.Models;
+using JWTAuthentication.Models;
+using JWTAuthentication.Entities;
 using JWTAuthentication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -44,6 +44,13 @@ namespace JWTAuthentication.Controllers
         [Authorize]
         [HttpGet]
         public IActionResult AuthenticatedOnlyEndpoint()
+        {
+            return Ok("You are authenticated.");
+        }
+        
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public IActionResult AdminOnlyEndpoint()
         {
             return Ok("You are authenticated.");
         }
