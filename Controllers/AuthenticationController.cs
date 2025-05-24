@@ -3,75 +3,49 @@ using System.Security.Claims;
 using System.Text;
 using JWTAutentication.Entities;
 using JWTAutentication.Models;
+using JWTAuthentication.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JWTAutentication.Controllers
+namespace JWTAuthentication.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController(IConfiguration configuration) : ControllerBase
+    public class AuthenticationController(IAuthService authService) : ControllerBase
     {
-        // Create a static user
-        public static User user = new User();
-        
         // Add route for post at api/authentication/register
         [HttpPost("register")]
         // Register returns a User object and takes in DTO
-        public ActionResult<User> Register(UserDTO request)
+        public async Task<ActionResult<User>> Register(UserDTO request)
         {
-            var hashedPassword = new PasswordHasher<User>()
-                .HashPassword(user, request.Password);
-            
-            user.Username = request.Username;
-            user.PasswordHash = hashedPassword;
+            var user = await authService.RegisterAsync(request);
+            if (user is null)
+            {
+                return BadRequest("Username already exists.");
+            }
 
             return Ok(user);
         }
 
         [HttpPost("login")]
         // Login returns a json web token and takes in a DTO which contains the username and password
-        public ActionResult<string> Login(UserDTO request)
+        public async Task<ActionResult<string>> Login(UserDTO request)
         {
-            if (user.Username != request.Username)
+            var token = await authService.LoginAsync(request);
+            if (token is null)
             {
-                return BadRequest("User not found.");
+                return BadRequest("Username or password is incorrect.");
             }
-
-            if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password)
-                == PasswordVerificationResult.Failed)
-            {
-                return BadRequest("Incorrect password.");
-            }
-
-            string token = CreateToken(user);
             return Ok(token);
         }
-
-        // Create JSON Web Token
-        private string CreateToken(User user)
+        
+        [Authorize]
+        [HttpGet]
+        public IActionResult AuthenticatedOnlyEndpoint()
         {
-            // Username, role, id, etc.
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-            };
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")));
-            
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
-
-            var tokenDescriptor = new JwtSecurityToken(
-                issuer: configuration.GetValue<string>("AppSettings:Issuer"),
-                audience: configuration.GetValue<string>("AppSettings:Audience"),
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
-                signingCredentials: creds
-            );
-            
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+            return Ok("You are authenticated.");
         }
     }
 }
